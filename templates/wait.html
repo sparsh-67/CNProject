@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>waiting</title>
+           <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+    </head>
+
+    <body>
+      <h1>Waiting for organizer to accept your request</h1>
+          <script type="text/javascript">
+            const unm='{{username}}';
+            const rm='{{room}}';
+            const ad='{{admin}}';
+            var url = location.protocol+'//'+document.domain+':'+location.port;
+            console.log(unm,rm,ad);
+            var socket = io.connect(url);
+            socket.emit('request_access', {'username': unm, 'room': rm,'admin':ad});
+            // console.log(unm,rm,ad);
+            socket.emit('join',{'username':unm, 'room':unm});
+            document.addEventListener('DOMContentLoaded', () => {
+              socket.on('message',function(data){
+                // socket.leave(unm);
+                console.log("reply recieved",data);
+                if(data.username !== undefined && data.answer!==undefined){
+                  console.log("reqly i thought",data);
+                  socket.emit('leave',{'username':data.username, 'room':data.username});
+                  if(!data.answer)window.location=url+"/dashboard";
+                  else{
+                    // socket.emit('join',{'username':unm, 'room':rm});
+                    window.location = url+`/chat/${rm}`;
+                  }
+                }
+              })
+          })
+</script>
+    </body>
+</html>
